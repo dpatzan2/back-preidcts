@@ -1,5 +1,7 @@
 const Rooms = require('../models/rooms.model');
 const Usuarios = require('../models/usuarios.model');
+const Participants = require('../models/participants.model');
+const Puntos = require('../models/puntos.model');
 
 
 const createRoom = (req, res) => {
@@ -27,19 +29,42 @@ const deleteRoom = (req, res) =>{
         if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
         if (findRoom.dueñoSala != req.user.sub) return res.status(500).send({message: 'No puedes eliminar esta sala, no te pertenece'});
 
-        Usuarios.find({romId: req.params.idRoom}, (err, usuariosEncontrados) => {
+        Participants.findOneAndDelete({idRoom: req.params.idRoom}, {new: true}, (err, participantesEliminados) =>{
             if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
-            for (let i = 0; i < usuariosEncontrados.length; i++) {
-                Usuarios.findByIdAndUpdate({_id: usuariosEncontrados[i]._id},{romId: ''}, {new: true}, (err, usuarioEliminado) =>{
+
+            Puntos.findOneAndDelete({idRoom: req.params.idRoom}, {new: true}, (err, puntosEliminados) =>{
+                if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
+
+                Rooms.findByIdAndDelete({_id: req.params.idRoom}, {new: true}, (err, roomEliminada) =>{
                     if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
 
-                    Rooms.findByIdAndDelete({_id: req.params.idRoom}, {new: true}, (err, roomDeleted) => {
-                        if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
-
-                        return res.status(200).send({message: 'Room eliminada exitosamente'});
-                    })
+                    return res.status(200).send({message: 'Sala eliminada exitosamente'});
                 });
-            }
+            });
+        });
+    });
+}
+
+const joinRoom = (req, res) => {
+    let roomId = req.body;
+    let participantsModel = new Participants();
+    let puntosModel = new Puntos();
+    Rooms.findOne({idUnion: roomId}, (err, joinRoom) => {
+        if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
+        if(!joinRoom) return res.status(404).send({message: 'Ninguna sala coincide con este id'});
+        participantsModel.idUsuario = req.user.sub;
+        participantsModel.idRoom = joinRoom._id;
+        participantsModel.save((err, participanteAgregado) => {
+            if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
+            puntosModel.idUsuario = req.user.sub;
+            puntosModel.idRoom = joinRoom._id;
+            puntosModel.pts = 0
+            puntosModel.fase = 'GRUPOS';
+            puntosModel.save((err, puntosGenerados) => {
+                if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
+
+                return res.status(200).send({message: 'Te has unido exitosamente a la sala' })
+            });
         });
     });
 }
@@ -47,5 +72,6 @@ const deleteRoom = (req, res) =>{
 
 module.exports = {
     createRoom,
-    deleteRoom
+    deleteRoom,
+    joinRoom
 }

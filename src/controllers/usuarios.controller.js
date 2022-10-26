@@ -1,5 +1,7 @@
 const Usuarios = require('../models/usuarios.model');
 const Rooms = require('../models/rooms.model');
+const Participants = require('../models/participants.model');
+const Puntos = require('../models/puntos.model');
 
 const bcrypt = require('bcrypt-nodejs');
 const jwt = require('../services/jwt');
@@ -10,7 +12,6 @@ function crearAdminPorDefecto() {
 
         if (!usuarioEncontrado) {
             usuarioModelo.usuario = 'ADMIN'
-            usuarioModelo.nombre = 'ADMIN'
             usuarioModelo.rol = 'ADMIN'
 
             bcrypt.hash('123456', null, null, (err, passwordEncriptada) => {
@@ -28,8 +29,6 @@ function crearAdminPorDefecto() {
 const creaerUsuarios = (req, res) => {
     let parameters = req.body;
     let usuarioModel = new Usuarios();
-
-    
 }
 
 function Login(req, res) {
@@ -67,13 +66,12 @@ function Login(req, res) {
 }
 
 const obtenerListaUsuarios = (req, res) => {
-    if(req.user.romId != req.params.idRoom) return res.status(402).send({message: 'No pertenes a esta sala'});
-    Usuarios.find({romId: req.params.idRoom}, (err, usuariosEncontrados) => {
+    Puntos.findOne({idRoom: req.params.idRoom, idUsuario: req.user.sub}, (err, listaFound) =>{
         if (err) return res.status(500).send({message: 'Ocurrio un eror al tratar de obtener los usuarios'});
-        if (!usuariosEncontrados) return res.status(500).send({message: 'No hay participantes aun en esta sala'});
+        if(!listaFound) return res.status(500).send({message: 'No pertenes a esta sala o no existe' });
 
-        return res.status(200).send({usuarios: usuariosEncontrados});
-    });
+        return res.status(200).send({lista: listaFound});
+    }).populate('idUsuario', 'usuario').populate('idRoom', 'nombreSala');
 }
 
 const eliminarUsuariosSala = (req, res) => {
@@ -82,18 +80,12 @@ const eliminarUsuariosSala = (req, res) => {
     Usuarios.findOne({_id: req.params.idUser}, (err, usuarios) => {
         if (err) return res.status(500).send({message: 'Ocurrio un eror al tratar de obtener los usuarios'});
         if (!usuarios) return res.status(500).send({message: 'No se pudo encontrar el usuario'});
+        Participants.findOneAndDelete({idRoom: req.params.idRoom, idUsuario: req.params.idUser}, {new: true}, (err, participanteEliminado) =>{
+            if (err) return res.status(500).send({message: 'Ocurrio un eror al tratar de obtener los usuarios'});
+            if (!participanteEliminado) return res.status(500).send({message: 'Este usuario no pertenece a tu sala'});
 
-        Rooms.findOne({dueñoSala: usuarios.romId}, (err, salaEncontrada) =>{
-            if (err) return res.status(500).send({message: 'Ocurrio un eror al tratar de obtener los datos de la sala'});
-            if (salaEncontrada.dueñoSala != req.user.sub) return res.status(403).send({message: 'Este usuario no pertenece a tu sala'});
-
-            Usuarios.findByIdAndDelete({_id: req.params.idUser}, {new: true}, (err, usuarioEliminado) => {
-                if (err) return res.status(500).send({message: 'Ocurrio un eror al tratar de eliminar el usuario de la sala'});
-                if (!usuarioEliminado) return res.status(500).send({message: 'No se pudo eliminar el usuario'});
-
-                return res.status(200).send({usuarioEliminado: usuarioEliminado});
-            });
-        });
+            return res.status(200).send({participanteEliminado: participanteEliminado});
+        })
     });
 }
 
