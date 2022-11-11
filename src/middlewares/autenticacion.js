@@ -3,12 +3,12 @@ const moment = require('moment');
 const secret = 'clave_secreta';
 
 exports.Auth = function(req, res, next) {
-    if ( !req.headers.authorization ) {
+    if ( !req.cookies.accessToken ) {
         return res.status(404)
             .send({ mensaje: 'La peticion, no posee la cabecera de Autenticacion' });
     }
 
-    var token = req.headers.authorization.replace(/['"]+/g, '');
+    var token = req.cookies.accessToken.replace(/['"]+/g, '');
 
     try {
         var payload = jwt_simple.decode(token, secret);

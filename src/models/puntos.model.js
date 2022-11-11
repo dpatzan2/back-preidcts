@@ -3,10 +3,10 @@ var Schema = mongoose.Schema;
 
 
 var PuntosSchema = Schema({ 
-    idUsuario: { type: Schema.Types.ObjectId, ref: 'usuarios'},
+    idUsuario: { type: Schema.Types.ObjectId, ref: 'Usuarios'},
     idRoom: { type: Schema.Types.ObjectId, ref: 'rooms'},
     pts: Number,
-    fase: String
+    fase: { type: Schema.Types.ObjectId, ref: 'Fases'},
 });
 
 module.exports = mongoose.model('Puntos', PuntosSchema);

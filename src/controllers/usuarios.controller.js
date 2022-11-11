@@ -27,14 +27,40 @@ function crearAdminPorDefecto() {
 }
 
 const creaerUsuarios = (req, res) => {
-    let parameters = req.body;
-    let usuarioModel = new Usuarios();
+    var parametros = req.body;
+    var usuarioModel = new Usuarios();
+
+    if(parametros.usuario && parametros.password) {
+            usuarioModel.usuario = parametros.usuario;
+            usuarioModel.rol = 'PARTICIPANT';
+
+            Usuarios.find({ usuario : parametros.usuario }, (err, usuarioEncontrado) => {
+                if ( usuarioEncontrado.length == 0 ) {
+
+                    bcrypt.hash(parametros.password, null, null, (err, passwordEncriptada) => {
+                        usuarioModel.password = passwordEncriptada;
+
+                        usuarioModel.save((err, usuarioGuardado) => {
+                            if (err) return res.status(500)
+                                .send({ message: 'Error en la peticion' });
+                            if(!usuarioGuardado) return res.status(500)
+                                .send({ message: 'Error al agregar el Usuario'});
+                            
+                            return res.status(200).send({ usuario: usuarioGuardado });
+                        });
+                    });                    
+                } else {
+                    return res.status(500)
+                        .send({ message: 'Este correo, ya  se encuentra utilizado' });
+                }
+            })
+    }
 }
 
 function Login(req, res) {
     var parametros = req.body;
     Usuarios.findOne({ usuario: parametros.usuario }, (err, usuarioEncontrado) => {
-        if (err) return res.status(500).send({ mensaje: 'Error en la peticion' });
+        if (err) return res.status(500).send({ message: 'Error en la peticion' });
         if (usuarioEncontrado) {
             // COMPARO CONTRASENA SIN ENCRIPTAR CON LA ENCRIPTADA
             bcrypt.compare(parametros.password, usuarioEncontrado.password,
@@ -42,10 +68,12 @@ function Login(req, res) {
                     // VERIFICO SI EL PASSWORD COINCIDE EN BASE DE DATOS
                     if (verificacionPassword) {
                         // SI EL PARAMETRO OBTENERTOKEN ES TRUE, CREA EL TOKEN
-                        if (parametros.obtenerToken === 'true') {
-                            return res.status(200)
-                                .send({ token: jwt.crearToken(usuarioEncontrado) })
+                        if (parametros.obtenerToken === true) {
+                            usuarioEncontrado.password = undefined;
+                            console.log(parametros)
+                            return res.cookie("accessToken",jwt.crearToken(usuarioEncontrado), {httpOnly: true}).status(200).json(usuarioEncontrado);
                         } else {
+                            console.log(parametros)
                             usuarioEncontrado.password = undefined;
                             return res.status(200)
                                 .send({ usuario: usuarioEncontrado })
@@ -54,13 +82,13 @@ function Login(req, res) {
 
                     } else {
                         return res.status(500)
-                            .send({ mensaje: 'Las contrasena no coincide' });
+                            .send({ message: 'Las contrasena no coincide' });
                     }
                 })
 
         } else {
             return res.status(500)
-                .send({ mensaje: 'Error, el correo no se encuentra registrado.' })
+                .send({ message: 'Error, el correo no se encuentra registrado.' })
         }
     })
 }
@@ -93,5 +121,6 @@ module.exports = {
     Login,
     crearAdminPorDefecto,
     obtenerListaUsuarios,
-    eliminarUsuariosSala
+    eliminarUsuariosSala,
+    creaerUsuarios
 }
