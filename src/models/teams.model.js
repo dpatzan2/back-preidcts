@@ -3,7 +3,6 @@ var Schema = mongoose.Schema;
 
 var TeamsSchema = Schema({
     name: String,
-    info: String,
     image: String
 })
 

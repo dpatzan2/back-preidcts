@@ -6,8 +6,9 @@ const Fases = require('../models/fases.model');
 const uuid = require("uuid").v4;
 
 const createRoom = (req, res) => {
-    console.log(req.body)
+    console.log(req.body.nameRoom)
     let parameters = req.body;
+    console.log(parameters.nameRoom)
     let roomModel = new Rooms();
     let generateId = uuid();
     let participantsModel = new Participants();
@@ -30,7 +31,6 @@ const createRoom = (req, res) => {
                     if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo 2'});
                     
                     for (let i = 0; i < fasesEncontradas.length; i++) {
-                        console.log(roomSaved._id)
                         let puntosModel = new Puntos();
                         puntosModel.idUsuario = req.user.sub;
                         puntosModel.idRoom = roomSaved._id;
@@ -38,11 +38,11 @@ const createRoom = (req, res) => {
                         
                         puntosModel.fase = fasesEncontradas[i]._id;
     
-                        console.log(puntosModel)
+        
     
                         puntosModel.save((err, puntosGuardados) => {
                             
-                            console.log('llegue aca')
+              
                    
                         })
      
@@ -158,6 +158,15 @@ const obtenerRoomsParticipando = (req, res) =>{
     }).populate('idRoom', 'nombreSala dueñoSala');
 }
 
+const obtenerRoomParticipando = (req, res) =>{
+    Rooms.findById({_id: req.params.idRoom}, (err, participacionesEncontradas) =>{
+        if (err) return res.status(500).send({message: 'Ocurrio un eror interno vuelve a intentarlo'});
+        if (!participacionesEncontradas) return res.status(404).send({message: 'No estas participando en ninguna sala' });
+
+        return res.status(200).send({participaciones: participacionesEncontradas})
+    }).populate('dueñoSala', 'usuario')
+}
+
 
 module.exports = {
     createRoom,
@@ -166,5 +175,6 @@ module.exports = {
     crearFases,
     obtenerRoomsParticipando,
     onbetenrFases,
-    obtenerPuntosPorFase
+    obtenerPuntosPorFase,
+    obtenerRoomParticipando
 }

@@ -8,12 +8,12 @@ const bcrypt = require('bcrypt-nodejs');
 mongoose.Promise = global.Promise;
 
 
-mongoose.connect('mongodb://localhost:27017/Predicts', { useNewUrlParser: true, useUnifiedTopology: true}).then(() =>{
+mongoose.connect('mongodb+srv://predicts:admin123456@cluster0.30co9.mongodb.net/predicts?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true}).then(() =>{
     console.log("Se encuentra conectado a la base de datos");
 
-    const port = process.env.PORT
+    const port = process.env.PORT || 3000;
 
-    app.listen(process.env.PORT || 3000, function() {
+    app.listen(port, function() {
         console.log(port)
         usuariosControlleri.crearAdminPorDefecto();
               

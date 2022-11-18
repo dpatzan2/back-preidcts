@@ -1,22 +1,21 @@
 const Teams = require('../models/teams.model');
-const Group = require('../models/groups.model');
+
 
 //Create
 const createTeam = (req,res)=>{
-    console.log(req.files);
     let parameters = req.body;
+    console.log(parameters)
     let teamModel = new Teams();
     if(req.user.rol === 'ADMIN'){
-        if(parameters.name && parameters.info && parameters.image){
+        if(parameters.name && parameters.image){
             Teams.findOne({name:parameters.name},(err,nameFound) => {
                 if(err){
                     return res.status(500).send({message:'Internt error, try it again'});
                 }
                 if(!nameFound){
                     teamModel.name = parameters.name;
-                    teamModel.info = parameters.info;
-                    teamModel.image = '';
-                    Teams.save((err,teamSaved)=>{
+                    teamModel.image = parameters.image;
+                    teamModel.save((err,teamSaved)=>{
                         if(err){
                             return res.status(500).send({message:'Intern error, try it again'});
                         }
@@ -80,11 +79,6 @@ const editTeam = (req,res)=>{
 const deleteTeam = (req,res)=>{
     let idTeam = req.params.idTeam;
     if(req.user.rol==='ADMIN'){
-        Group.find({idTeam:idTeam},(err,teamGrop)=>{
-            if(err){
-                return res.status(500).send({message:'Intern error, try it again'});
-            }
-        });
         Teams.findByIdAndDelete(idTeam, (err,teamDeleted)=>{
             if(err){
                 return res.status(500).send({message:'Intern error, try it again'});
