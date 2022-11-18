@@ -8,7 +8,7 @@ app.use(express.static("./files"));
   
 const corsConfig = {
     credentials: true,
-    origin: true,
+    origin: 'https://drab-puce-puffer-sari.cyclic.app',
 };
 
 //importaciones rutas
