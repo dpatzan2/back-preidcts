@@ -58,6 +58,7 @@ const creaerUsuarios = (req, res) => {
 }
 
 function Login(req, res) {
+    console.log('holamundo')
     var parametros = req.body;
     Usuarios.findOne({ usuario: parametros.usuario }, (err, usuarioEncontrado) => {
         if (err) return res.status(500).send({ message: 'Error en la peticion' });
@@ -72,7 +73,9 @@ function Login(req, res) {
                             usuarioEncontrado.password = undefined;
                             console.log(parametros)
                             const token = jwt.crearToken(usuarioEncontrado);
-                            return res.cookie("accessToken",token, { Domain:' precits-qatar-2022-back-dpatzan2019173.vercel.app', Path:'/' ,  HttpOnly:false, Secure:false}).status(200).send(usuarioEncontrado, token);
+                            // console.log(jwt.crearToken(usuarioEncontrado), 'kajsndkjasbdkajbdakjsd')
+                            // return res.cookie("accessToken",token, { Domain:' precits-qatar-2022-back-dpatzan2019173.vercel.app', Path:'/' ,  HttpOnly:false, Secure:false}).status(200).send(usuarioEncontrado, token);
+                            return res.status(200).send(jwt.crearToken(usuarioEncontrado))
                         } else {
                             console.log(parametros)
                             usuarioEncontrado.password = undefined;
