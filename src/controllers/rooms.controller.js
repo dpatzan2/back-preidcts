@@ -6,7 +6,7 @@ const Fases = require('../models/fases.model');
 const uuid = require("uuid").v4;
 
 const createRoom = (req, res) => {
-    console.log(req.body.nameRoom)
+    console.log(req.body)
     let parameters = req.body;
     console.log(parameters.nameRoom)
     let roomModel = new Rooms();
@@ -78,7 +78,7 @@ const deleteRoom = (req, res) =>{
 }
 
 const joinRoom = (req, res) => {
-    console.log(req.user)
+    console.log(req.params.roomId)
     let roomId = req.params.roomId;
     let participantsModel = new Participants();
     Rooms.findOne({idUnion: roomId}, (err, joinRoom) => {

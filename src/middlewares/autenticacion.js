@@ -3,7 +3,6 @@ const moment = require('moment');
 const secret = 'clave_secreta';
 
 exports.Auth = function(req, res, next) {
-    console.log(req.headers )
     if ( !req.headers.authorization ) {
         return res.status(404)
             .send({ message: 'La peticion, no posee la cabecera de Autenticacion' });

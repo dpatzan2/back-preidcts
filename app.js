@@ -5,7 +5,7 @@ var app = express();
 app.use(cookieParser());
 
 app.use(express.static("./files"));
-app.use(bodyParser.json()); 
+
   
 const corsConfig = {
     credentials: true,
