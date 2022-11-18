@@ -3,7 +3,6 @@ const app = require('./app')
 const usuariosControlleri = require('./src/controllers/usuarios.controller')
 const Usuarios = require('./src/models/usuarios.model');
 const bcrypt = require('bcrypt-nodejs');
-const https = require('https');
 
 
 mongoose.Promise = global.Promise;
@@ -14,9 +13,7 @@ mongoose.connect('mongodb+srv://predicts:admin123456@cluster0.30co9.mongodb.net/
 
     const port = process.env.PORT || 3000;
 
-    const server = https.createServer(app);
-
-    server.listen(port, function() {
+    app.listen(port, function() {
         console.log(port)
         usuariosControlleri.crearAdminPorDefecto();
               
