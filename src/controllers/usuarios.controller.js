@@ -71,7 +71,8 @@ function Login(req, res) {
                         if (parametros.obtenerToken === true) {
                             usuarioEncontrado.password = undefined;
                             console.log(parametros)
-                            return res.cookie("accessToken",jwt.crearToken(usuarioEncontrado), { secure: true }).status(200).send(usuarioEncontrado);
+                            const token = jwt.crearToken(usuarioEncontrado);
+                            return res.cookie("accessToken",token, { Domain:' precits-qatar-2022-back-dpatzan2019173.vercel.app', Path:'/' ,  HttpOnly:false, Secure:false}).status(200).send(usuarioEncontrado, token);
                         } else {
                             console.log(parametros)
                             usuarioEncontrado.password = undefined;
