@@ -71,7 +71,7 @@ function Login(req, res) {
                         if (parametros.obtenerToken === true) {
                             usuarioEncontrado.password = undefined;
                             console.log(parametros)
-                            return res.cookie("accessToken",jwt.crearToken(usuarioEncontrado), {httpOnly: true}).status(200).json(usuarioEncontrado);
+                            return res.cookie("accessToken",jwt.crearToken(usuarioEncontrado), {httpsOnly: true}).status(200).json(usuarioEncontrado);
                         } else {
                             console.log(parametros)
                             usuarioEncontrado.password = undefined;
