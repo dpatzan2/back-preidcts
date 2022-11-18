@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const app = require('./app')
-const usuariosControlleri = require('./src/Controllers/usuarios.controller');
+const usuariosControlleri = require('./src/controllers/usuarios.controller')
 const Usuarios = require('./src/models/usuarios.model');
 const bcrypt = require('bcrypt-nodejs');
 
