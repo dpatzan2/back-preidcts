@@ -4,12 +4,12 @@ const secret = 'clave_secreta';
 
 exports.Auth = function(req, res, next) {
     console.log(req.headers )
-    if ( !req.cookies.accessToken ) {
+    if ( !req.headers.authorization ) {
         return res.status(404)
             .send({ message: 'La peticion, no posee la cabecera de Autenticacion' });
     }
 
-    var token = req.cookies.accessToken.replace(/['"]+/g, '');
+    var token = req.headers.authorization .replace(/['"]+/g, '');
 
     try {
         var payload = jwt_simple.decode(token, secret);
