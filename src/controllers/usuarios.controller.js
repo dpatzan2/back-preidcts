@@ -73,7 +73,7 @@ function Login(req, res) {
                             console.log(parametros)
                             const token = jwt.crearToken(usuarioEncontrado);
                             console.log(token)
-                            return res.cookie("accessToken",token, { Domain:'https://drab-puce-puffer-sari.cyclic.app', Path:'/' ,  HttpOnly:false, Secure:true}).status(200).send(usuarioEncontrado, token);
+                            return res.cookie("accessToken",token, { Domain:'https://drab-puce-puffer-sari.cyclic.app', Path:'/' ,  HttpOnly:false, Secure:true}).status(200).json({usuarioEncontrado, token});
                         } else {
                             console.log(parametros)
                             usuarioEncontrado.password = undefined;
