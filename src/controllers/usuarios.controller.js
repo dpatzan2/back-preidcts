@@ -58,7 +58,6 @@ const creaerUsuarios = (req, res) => {
 }
 
 function Login(req, res) {
-    console.log('holamundo')
     var parametros = req.body;
     Usuarios.findOne({ usuario: parametros.usuario }, (err, usuarioEncontrado) => {
         if (err) return res.status(500).send({ message: 'Error en la peticion' });
@@ -73,11 +72,10 @@ function Login(req, res) {
                             usuarioEncontrado.password = undefined;
                             console.log(parametros)
                             const token = jwt.crearToken(usuarioEncontrado);
-                            // console.log(jwt.crearToken(usuarioEncontrado), 'kajsndkjasbdkajbdakjsd')
-                            // return res.cookie("accessToken",token, { Domain:' precits-qatar-2022-back-dpatzan2019173.vercel.app', Path:'/' ,  HttpOnly:false, Secure:false}).status(200).send(usuarioEncontrado, token);
-                            return res.status(200).send(jwt.crearToken(usuarioEncontrado))
+                            console.log(token)
+                            return res.cookie("accessToken",token, { Domain:'https://drab-puce-puffer-sari.cyclic.app', Path:'/' ,  HttpOnly:false, Secure:true}).status(200).send(usuarioEncontrado, token);
                         } else {
-                            console.log(parametros, 'asjdkanskjdbaskd')
+                            console.log(parametros)
                             usuarioEncontrado.password = undefined;
                             return res.status(200)
                                 .send({ usuario: usuarioEncontrado })
