@@ -127,6 +127,9 @@ const putMatches = (req, res) => {
                 if (predictsFound[i].goalTeam1 == predictsFound[i].goalTeam2 == inputs.goalTeam2 ) {
                     pts = 1
                 }
+                if (predictsFound[i].goalTeam1 == predictsFound[i].goalTeam2 && inputs.goalTeam2 == inputs.goalTeam1) {
+                    pts = 1
+                }
                 if (inputs.goalTeam1 > inputs.goalTeam2 && predictsFound[i].goalTeam1 > predictsFound[i].goalTeam2) {
                     pts = 1
                 }else if (inputs.goalTeam2 > inputs.goalTeam1 && predictsFound[i].goalTeam2 > predictsFound[i].goalTeam1) {
